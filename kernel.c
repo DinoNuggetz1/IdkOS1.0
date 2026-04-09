@@ -2,15 +2,12 @@ unsigned short *vga_buffer = (unsigned short *)0xB8000;
 int l = 79;
 int y = 0;
 int x = 0;
+__attribute__((section(".rodata")));
 char *logo =
-   "  _    _      _ _         __          __        _     _ \n"
-   " | |  | |    | | |        \ \        / /       | |   | |\n"
-   " | |__| | ___| | | ___     \ \  /\  / /__  _ __| | __| |\n"
-   " |  __  |/ _ \ | |/ _ \     \ \/  \/ / _ \| '__| |/ _` |\n"
-   " | |  | |  __/ | | (_) |     \  /\ /  (_) | |  | | (_| |\n"
-   " |_|  |_|\___|_|_|\___( )     \/  \/ \___/|_|  |_|\__,_|\n"
-   "                      |/                                \n";
-                                                     
+"||   ||  (_)\n"
+"||___||  | |\n"
+"||   ||  |_|\n";
+                                               
 void print_char(char c, unsigned char color) {
    const int width = 80;
    if (c == '\n') {
@@ -32,8 +29,13 @@ void print_string(char *str, unsigned char color) {
    }
 }
 void kernel_main() {
-   print_char('H', 0x9F);
-   print_char('i', 0x9F);
- 
+//   print_char('H', 0x9F);
+//   print_char('i', 0x9F);
+    for (int i = 0; i < 80 * 25; i++) {
+        vga_buffer[i] = (0x0F << 8) | ' '; // Black background, white space
+    }
+
+   y = 0;
+   x = 0;
    print_string(logo, 0x9F);
 }
