@@ -1,4 +1,3 @@
 # IdkOS1.0
 
-still working on main.asm
-need to int gdt and a20 line please add if you know how to
+Working on the grub branch right now because I can't get the assembly bootloader running
