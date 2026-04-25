@@ -91,7 +91,24 @@ void panic(void){
 
         __asm__ __volatile__ ("cli; hlt");
 }
-
+void print_int(unsigned int n, unsigned char color) {
+    char buf[11];
+    int i = 10;
+    buf[i] = '\0';
+    if (n == 0) buf[--i] = '0';
+    while (n > 0 && i > 0) {
+        buf[--i] = (n % 10) + '0';
+        n /= 10;
+    }
+    print_string(&buf[i], color);
+}
+int cmp(char *s1, char *s2) {
+    while (*s1 && (*s1 == *s2)) {
+        s1++;
+        s2++;
+    }
+    return *(unsigned char *)s1 - *(unsigned char *)s2;
+}
 
 void shell(unsigned char scancode) {
 
@@ -121,6 +138,7 @@ void shell(unsigned char scancode) {
                     }
                     
                     y = 0; x = 0;
+                    print_string(*logo, 0x0F);
             none = 1;
                 }
             else if (cmd[0] == 'g' && cmd[1] == 'u' && cmd[2] == 'i'){
@@ -133,7 +151,33 @@ void shell(unsigned char scancode) {
                 print_string(logo, 0x9f);
             none = 1;
             }
-
+            else if (cmd[0] =='c' && cmd[1] == 'h' && cmd[2] == 'k' && cmd[3] == 's' && cmd[4] == 'm'){
+                unsigned char* mem = (unsigned char*)0x100000;
+                unsigned int actual_mem_val = 0;
+                for(int i = 0; i < 1024; i++) {
+                    actual_mem_val += mem[i];
+                }
+                unsigned int res0 = actual_mem_val*144;
+                unsigned int chksm = res0/12;
+                print_string("\n", 0x0e);
+                print_int(chksm, 0x0A);
+                if(chksm != 1364040){
+                    print_string("Memory Corrupted? Chksm should be 1364040 but is" ,0x04);
+                    print_int(chksm, 0x04);
+                }
+            
+                
+                none = 1;
+            }    
+                //char chksm[] = "DCA0771A2646805C92DA7169ACA621A83AF97129EFB6FE8269F56980FC73C07E";
+            else if (cmp(cmd, "test") == 0){
+                print_string("test complete", 0x0A);
+                none = 1;
+            }
+            
+            else if (c == '\n' && cmd[0] == '\0'){
+                none = 1;
+            }
             if (none == 0) {
             print_string("\nUnknown Command", 0x50);
         }
@@ -162,6 +206,7 @@ void shell(unsigned char scancode) {
             if (cmd_idx < 31) {
                 cmd[cmd_idx] = c;
                 cmd_idx++;
+                cmd[cmd_idx] = '\0';
             }
             print_char(c, 0x0F);
         
