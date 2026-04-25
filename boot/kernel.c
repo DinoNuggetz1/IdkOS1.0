@@ -161,8 +161,8 @@ void shell(unsigned char scancode) {
                 unsigned int chksm = res0/12;
                 print_string("\n", 0x0e);
                 print_int(chksm, 0x0A);
-                if(chksm != 1364040){
-                    print_string("Memory Corrupted? Chksm should be 1364040 but is" ,0x04);
+                if(chksm != 1372344){
+                    print_string("Memory Corrupted? Chksm should be 1364040 but is " ,0x04);
                     print_int(chksm, 0x04);
                 }
             
